@@ -1,0 +1,139 @@
+services:
+
+  postgres-customer:
+    image: postgres:16
+    container_name: postgres-customer
+    environment:
+      POSTGRES_DB: customerdb
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres-customer-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d customerdb"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  postgres-account:
+    image: postgres:16
+    container_name: postgres-account
+    environment:
+      POSTGRES_DB: accountdb
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5434:5432"
+    volumes:
+      - postgres-account-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d accountdb"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  postgres-auth:
+    image: postgres:16
+    container_name: postgres-auth
+    environment:
+      POSTGRES_DB: authdb
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5435:5432"
+    volumes:
+      - postgres-auth-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d authdb"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  postgres-transaction:
+    image: postgres:16
+    container_name: postgres-transaction
+    environment:
+      POSTGRES_DB: transactiondb
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5436:5432"
+    volumes:
+      - postgres-transaction-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d transactiondb"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  customer-service:
+    build:
+      context: ./customer-service
+    container_name: customer-service
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres-customer:5432/customerdb
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: postgres
+      BANK_SECURITY_SECRET: minha-chave-jwt-super-segura-com-mais-de-32-caracteres
+      BANK_SECURITY_EXPIRATION: 86400000
+    depends_on:
+      postgres-customer:
+        condition: service_healthy
+
+  account-service:
+    build:
+      context: ./account-service
+    container_name: account-service
+    ports:
+      - "8081:8081"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres-account:5432/accountdb
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: postgres
+      BANK_SECURITY_SECRET: minha-chave-jwt-super-segura-com-mais-de-32-caracteres
+      BANK_SECURITY_EXPIRATION: 86400000
+    depends_on:
+      postgres-account:
+        condition: service_healthy
+
+  transaction-service:
+    build:
+      context: ./transaction-service
+    container_name: transaction-service
+    ports:
+      - "8082:8082"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres-transaction:5432/transactiondb
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: postgres
+      BANK_SECURITY_SECRET: minha-chave-jwt-super-segura-com-mais-de-32-caracteres
+      BANK_SECURITY_EXPIRATION: 86400000
+    depends_on:
+      postgres-transaction:
+        condition: service_healthy
+
+  auth-service:
+    build:
+      context: ./auth-service
+    container_name: auth-service
+    ports:
+      - "8083:8083"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres-auth:5432/authdb
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: postgres
+      BANK_SECURITY_SECRET: minha-chave-jwt-super-segura-com-mais-de-32-caracteres
+      BANK_SECURITY_EXPIRATION: 86400000
+    depends_on:
+      postgres-auth:
+        condition: service_healthy
+
+volumes:
+  postgres-customer-data:
+  postgres-account-data:
+  postgres-auth-data:
+  postgres-transaction-data:

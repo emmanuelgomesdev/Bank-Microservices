@@ -1,0 +1,22 @@
+CREATE SEQUENCE account_number_seq
+    START WITH 10000000
+    INCREMENT BY 1
+    MINVALUE 10000000
+    MAXVALUE 99999999
+    CACHE 1;
+CREATE TABLE accounts(
+
+id UUID PRIMARY KEY,
+customer_id UUID NOT NULL,
+branch VARCHAR(4) NOT NULL,
+number VARCHAR(8) NOT NULL,
+balance NUMERIC(19,2) NOT NULL DEFAULT 0.00,
+status VARCHAR(20) NOT NULL DEFAULT 'ACTIVE',
+created_at TIMESTAMP NOT NULL,
+updated_at TIMESTAMP NOT NULL,
+
+CONSTRAINT uk_accounts_customer UNIQUE (customer_id),
+CONSTRAINT uk_accounts_number UNIQUE (number)
+
+
+);
