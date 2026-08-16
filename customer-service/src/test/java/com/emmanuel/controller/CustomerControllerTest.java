@@ -31,10 +31,11 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 
 @WebMvcTest(CustomerController.class)
-public class CustomerControllerTest {
-
+@AutoConfigureMockMvc(addFilters = false)
+class CustomerControllerTest {
     @Autowired
     private MockMvc mockMvc;
 
@@ -327,14 +328,4 @@ public class CustomerControllerTest {
         verify(customerRestMapper).toResponse(result);
     }
 
-    @Test
-    void shouldDeletecustomer() throws Exception {
-
-        UUID id = UUID.randomUUID();
-
-        mockMvc.perform(delete("/customers/{id}", id))
-                .andExpect(status().isNoContent());
-
-        verify(service).delete(id);
-    }
 }

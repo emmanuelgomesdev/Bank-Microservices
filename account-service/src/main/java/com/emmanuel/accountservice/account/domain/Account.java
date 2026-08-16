@@ -1,6 +1,7 @@
 package com.emmanuel.accountservice.account.domain;
 
 import com.emmanuel.accountservice.account.domain.enums.AccountStatus;
+import com.emmanuel.accountservice.account.domain.enums.MovementType;
 import com.emmanuel.accountservice.exception.BusinessException;
 import com.emmanuel.accountservice.exception.enums.ErrorResponse;
 import jakarta.persistence.*;
@@ -125,11 +126,37 @@ public class Account {
         this.status = AccountStatus.CLOSED;
     }
 
-    public void updateBalance(BigDecimal newBalance) {
-        if(newBalance.compareTo(BigDecimal.ZERO) <= 0) {
-            throw new BusinessException(ErrorResponse.ACCOUNT_INVALID_BALANCE);
+    public void applyMovement(BigDecimal amount, MovementType type) {
+
+        BigDecimal newBalance = this.balance;
+
+        if (amount == null || amount.compareTo(BigDecimal.ZERO) <= 0) {
+            throw new BusinessException(ErrorResponse.ACCOUNT_INVALID_AMOUNT);
+        }
+
+        if (type == null) {
+            throw new BusinessException(ErrorResponse.ACCOUNT_INVALID_TYPE);
+        }
+
+        if (!AccountStatus.ACTIVE.equals(status)) {
+            throw new BusinessException(ErrorResponse.ACCOUNT_NOT_ACTIVE);
+        }
+
+        if (type.isCredit()){
+            newBalance = newBalance.add(amount);
+
+        }else{
+
+            if (balance.compareTo(amount) < 0) {
+                throw new BusinessException(ErrorResponse.ACCOUNT_INVALID_BALANCE);
+            }
+            newBalance = newBalance.subtract(amount);
         }
 
         this.balance = newBalance;
+
+
     }
+
+
 }

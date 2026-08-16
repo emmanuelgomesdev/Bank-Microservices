@@ -1,7 +1,9 @@
 package com.emmanuel.accountservice.account.service;
 
+import com.emmanuel.accountservice.account.application.command.AccountMovementCommand;
 import com.emmanuel.accountservice.account.application.command.CommandCreateAccount;
 import com.emmanuel.accountservice.account.application.result.AccountBalanceResult;
+import com.emmanuel.accountservice.account.application.result.AccountMovementResult;
 import com.emmanuel.accountservice.account.application.result.AccountResult;
 import com.emmanuel.accountservice.account.domain.Account;
 import com.emmanuel.accountservice.account.mapper.ApplicationAccountMapper;
@@ -105,7 +107,7 @@ public class AccountService {
         return applicationAccountMapper.toResult(account);
     }
 
-    @Transactional(readOnly = true)
+    @Transactional
     public AccountBalanceResult getBalance(UUID id){
         LOGGER.info("Getting balance for account {}", id);
 
@@ -114,14 +116,15 @@ public class AccountService {
 
     }
 
-    @Transactional(readOnly = true)
-    public AccountBalanceResult updateBalance(UUID id, BigDecimal newBalance){
-        LOGGER.info("Updating balance for account {}", newBalance);
+    @Transactional
+    public AccountMovementResult applyMovement(UUID id, AccountMovementCommand command){
+        LOGGER.info("Applying movement to account {}", id);
 
         var account = accountValidator.findById(id);
-        account.updateBalance(newBalance);
-        return applicationAccountMapper.toBalanceResult(account);
 
+        BigDecimal previousBalance = account.getBalance();
+        account.applyMovement(command.amount(), command.type());
+        return applicationAccountMapper.toMovementResult(account, previousBalance);
     }
 
 

@@ -1,10 +1,12 @@
 package com.emmanuel.accountservice.account.mapper;
 
 import com.emmanuel.accountservice.account.application.result.AccountBalanceResult;
+import com.emmanuel.accountservice.account.application.result.AccountMovementResult;
 import com.emmanuel.accountservice.account.application.result.AccountResult;
 import com.emmanuel.accountservice.account.domain.Account;
-import com.emmanuel.accountservice.account.dto.AccountBalanceResponse;
 import org.springframework.stereotype.Component;
+
+import java.math.BigDecimal;
 
 @Component
 public class ApplicationAccountMapper {
@@ -33,4 +35,15 @@ public class ApplicationAccountMapper {
         );
     }
 
+    public AccountMovementResult toMovementResult(
+            Account account,
+            BigDecimal previousBalance
+    ) {
+        return new AccountMovementResult(
+                account.getId(),
+                previousBalance,
+                account.getBalance(),
+                account.getStatus()
+        );
+    }
 }

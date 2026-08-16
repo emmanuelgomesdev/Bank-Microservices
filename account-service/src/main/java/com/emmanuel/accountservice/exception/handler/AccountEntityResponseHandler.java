@@ -70,7 +70,6 @@ public class AccountEntityResponseHandler extends ResponseEntityExceptionHandler
                 erros
         );
 
-
         return handleExceptionInternal(
                 ex,
                 response,
