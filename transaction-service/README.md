@@ -1,183 +1,49 @@
 # Transaction Service
 
-Backend desenvolvido em **Java 21** utilizando **Spring Boot 3**, com foco em boas práticas, arquitetura limpa e microsserviços.
+Microsserviço responsável por registrar operações de crédito e débito.
 
-Este projeto faz parte da solução **Banking Microservices**, desenvolvida para simular uma arquitetura bancária moderna semelhante às utilizadas por instituições financeiras. O objetivo é evoluir gradualmente o projeto até uma arquitetura distribuída, incluindo comunicação entre microsserviços, mensageria, observabilidade e deploy em nuvem.
+> [!WARNING]
+> **Implementação parcial e em evolução.** A persistência e as regras básicas existem, mas a consulta de conta, seu status e saldo ainda é simulada no código. Este módulo não representa um fluxo financeiro real.
 
----
+## O que está implementado
 
-## 🏦 Banking Microservices
+- criação de créditos e débitos;
+- validação de valor e saldo para débito;
+- cálculo do saldo resultante;
+- consulta por ID e listagem paginada;
+- PostgreSQL, Flyway, tratamento de erros, Swagger e Actuator.
 
-Atualmente a solução é composta pelos seguintes microsserviços:
+## Mock atual
 
-- ✅ customer-service
-- ✅ account-service
-- ✅ transaction-service
+Enquanto a comunicação com o `account-service` não é implementada, o serviço:
 
-Próximas evoluções:
+- reconhece apenas a conta `8ad2a0c9-1989-4b89-9728-83ccd96ee18d`;
+- considera essa conta como `ACTIVE`;
+- usa saldo inicial fixo de `100` em cada operação;
+- registra o saldo calculado na transação, sem alterar a conta real.
 
-- Comunicação entre microsserviços
-- Kafka
-- Redis
-- AWS
-- CI/CD
-- Observabilidade
+Esse comportamento temporário permite evoluir o domínio de forma incremental.
 
----
+## Endpoints
 
-## 🚀 Tecnologias
+| Método | Rota | Descrição |
+| --- | --- | --- |
+| `POST` | `/transactions` | Registra uma transação |
+| `GET` | `/transactions/{id}` | Consulta por ID |
+| `GET` | `/transactions` | Lista com paginação |
 
-- Java 21
-- Spring Boot 3
-- Spring Data JPA
-- PostgreSQL
-- Flyway
-- Docker
-- Docker Compose
-- Maven
-- JUnit 5
-- Mockito
-- Swagger / OpenAPI
+## Execução
 
----
+Na raiz: `docker compose up --build`.
 
-## 📁 Arquitetura
+API: `http://localhost:8082/transactions`
 
-O projeto segue organização por feature.
+Swagger: `http://localhost:8082/swagger-ui/index.html`
 
-```
-transaction
-│
-├── application
-├── controller
-├── domain
-├── dto
-├── mapper
-├── repository
-├── service
-└── validation
-```
+Execução isolada: PostgreSQL em `localhost:5436` e `./mvnw spring-boot:run`.
 
-Documentações técnicas encontram-se na pasta **docs/**.
+## Testes e roadmap
 
----
+Execute `./mvnw test`. Atualmente existe apenas o teste de contexto.
 
-## ✨ Funcionalidades
-
-- Criação de transações
-- Consulta de transação por ID
-- Listagem paginada de transações
-- Validação de regras de negócio
-- Validação de valor da transação
-- Cálculo de saldo da operação
-- Tratamento global de exceções
-- Documentação OpenAPI
-
----
-
-## ▶️ Executando o projeto
-
-### 1. Clonar o repositório
-
-```bash
-git clone <url-do-repositorio>
-```
-
-### 2. Subir o banco de dados
-
-```bash
-docker compose up
-```
-
-### 3. Executar a aplicação
-
-Execute a classe:
-
-```
-TransactionServiceApplication
-```
-
-ou execute pelo IntelliJ IDEA.
-
----
-
-## 📚 Documentação da API
-
-Após iniciar a aplicação:
-
-```
-http://localhost:8080/swagger-ui/index.html
-```
-
----
-
-## 🗄️ Banco de Dados
-
-As alterações do banco são versionadas utilizando **Flyway**.
-
-Todas as migrations encontram-se em:
-
-```
-src/main/resources/db/migration
-```
-
----
-
-## 🧪 Testes
-
-Linux/macOS
-
-```bash
-./mvnw test
-```
-
-Windows
-
-```powershell
-mvnw.cmd test
-```
-
----
-
-## 🐳 Docker
-
-Subir ambiente
-
-```bash
-docker compose up
-```
-
-Parar ambiente
-
-```bash
-docker compose down
-```
-
----
-
-## 📌 Roadmap
-
-- [x] Criação de transações
-- [x] Consulta por ID
-- [x] Listagem paginada
-- [x] Validação de regras de negócio
-- [x] Tratamento global de exceções
-- [x] Docker
-- [x] Docker Compose
-- [x] Flyway
-- [ ] Integração com Account Service
-- [ ] Integração com Customer Service
-- [ ] Comunicação entre Microsserviços
-- [ ] Kafka
-- [ ] Redis
-- [ ] AWS
-- [ ] GitHub Actions
-- [ ] CI/CD
-- [ ] Observabilidade
-- [ ] Testes de Integração
-
----
-
-## 👨‍💻 Autor
-
-**Emmanuel Gomes**
+Próximas evoluções: remover os mocks, integrar contas, garantir idempotência e consistência, avaliar Kafka, adicionar segurança compartilhada e ampliar testes, observabilidade e CI/CD.
