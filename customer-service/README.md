@@ -1,149 +1,56 @@
 # Customer Service
 
-Backend desenvolvido em **Java 21** utilizando **Spring Boot** com foco em boas práticas, arquitetura limpa e microsserviços.
+Microsserviço responsável pelo ciclo de vida dos clientes do Bank Microservices.
 
-Este projeto está sendo utilizado como ambiente de simulação do dia a dia de um Backend Java Enterprise, aplicando tecnologias utilizadas em projetos modernos.
+> [!NOTE]
+> Este módulo faz parte de um projeto em evolução. A API e a persistência de clientes estão implementadas, mas integrações distribuídas e uma cobertura homogênea de testes ainda estão no roadmap.
 
----
+## Funcionalidades atuais
 
-## 🚀 Tecnologias
+- criação, consulta e listagem paginada de clientes;
+- atualização de dados cadastrais;
+- ativação e desativação;
+- validações e tratamento padronizado de erros;
+- PostgreSQL, Flyway, proteção JWT e OpenAPI/Swagger;
+- testes unitários, de controller, repositório e integração.
 
-- Java 21
-- Spring Boot 3
-- Spring Data JPA
-- PostgreSQL
-- Flyway
-- Docker
-- Docker Compose
-- Maven
-- JUnit 5
-- Mockito
-- Swagger / OpenAPI
+## Endpoints
 
----
+| Método | Rota | Descrição |
+| --- | --- | --- |
+| `POST` | `/customers` | Cadastra um cliente |
+| `GET` | `/customers/{id}` | Consulta por ID |
+| `GET` | `/customers` | Lista com paginação |
+| `PUT` | `/customers/{id}` | Atualiza os dados permitidos |
+| `PATCH` | `/customers/{id}/activate` | Ativa o cliente |
+| `PATCH` | `/customers/{id}/deactivate` | Desativa o cliente |
 
-## 📁 Arquitetura
+## Execução
 
-O projeto segue organização por feature.
-
-```
-customer
-│
-├── application
-├── controller
-├── domain
-├── dto
-├── mapper
-├── repository
-├── service
-└── validation
-```
-
-Documentações técnicas encontram-se na pasta **docs/**.
-
----
-
-## ▶️ Executando o projeto
-
-### 1. Clonar o projeto
+Na raiz do repositório:
 
 ```bash
-git clone <url-do-repositorio>
+docker compose up --build
 ```
 
-### 2. Subir o banco de dados
+API: `http://localhost:8080/customers`
 
-```bash
-docker compose up
-```
+Swagger: `http://localhost:8080/swagger-ui/index.html`
 
-### 3. Executar a aplicação
+Para executar apenas o módulo, use PostgreSQL em `localhost:5433`, instale antes `bank-security` no Maven local e rode `./mvnw spring-boot:run`.
 
-Execute a classe:
+## Configuração
 
-```
-CustomerServiceApplication
-```
+| Variável | Padrão local |
+| --- | --- |
+| `SPRING_DATASOURCE_URL` | `jdbc:postgresql://localhost:5433/customerdb` |
+| `SPRING_DATASOURCE_USERNAME` | `postgres` |
+| `SPRING_DATASOURCE_PASSWORD` | `postgres` |
+| `BANK_SECURITY_SECRET` | sem padrão |
+| `BANK_SECURITY_EXPIRATION` | `86400000` |
 
-ou
+## Testes e roadmap
 
-```
-Run pelo IntelliJ IDEA
-```
+Execute `./mvnw test`; o relatório JaCoCo é gerado em `target/site/jacoco/`.
 
----
-
-## 📚 API
-
-Após iniciar a aplicação:
-
-```
-http://localhost:8080/swagger-ui/index.html
-```
-
----
-
-## 🗄️ Banco de Dados
-
-As alterações de banco são controladas através do Flyway.
-
-Todas as migrations encontram-se em:
-
-```
-src/main/resources/db/migration
-```
-
----
-
-## 🧪 Testes
-
-Executar:
-
-```bash
-./mvnw test
-```
-
-Windows:
-
-```powershell
-mvnw.cmd test
-```
-
----
-
-## 🐳 Docker
-
-Subir ambiente:
-
-```bash
-docker compose up
-```
-
-Parar ambiente:
-
-```bash
-docker compose down
-```
-
----
-
-## 📌 Roadmap
-
-Próximas implementações:
-
-- [x] Docker
-- [x] Docker Compose
-- [x] Flyway
-- [ ] Redis
-- [ ] Kafka
-- [ ] AWS
-- [ ] GitHub Actions
-- [ ] CI/CD
-- [ ] Observabilidade
-- [ ] Testes de Integração
-
----
-
-## 👨‍💻 Autor
-
-Emmanuel Gomes
+Próximas evoluções: integração com os demais serviços, testes de contrato, mensageria, observabilidade e CI/CD.

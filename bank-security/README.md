@@ -1,367 +1,55 @@
-# 🛡️ Bank Security
+# Bank Security
 
-![Java](https://img.shields.io/badge/Java-21-orange)
-![Spring Boot](https://img.shields.io/badge/Spring_Boot-4.x-brightgreen)
-![Spring Security](https://img.shields.io/badge/Spring_Security-6.x-green)
-![JWT](https://img.shields.io/badge/JWT-Authentication-blue)
-![Maven](https://img.shields.io/badge/Maven-3.9+-red)
-![License](https://img.shields.io/badge/License-MIT-lightgrey)
+Biblioteca interna que reúne a configuração JWT compartilhada pelos serviços Spring Boot.
 
-Biblioteca responsável por centralizar toda a configuração de autenticação e autorização dos microsserviços da plataforma.
+> [!NOTE]
+> Biblioteca em evolução, criada para centralizar e reutilizar a configuração de segurança neste monorepo. Ainda não é publicada em um repositório Maven nem representa uma solução completa de segurança para produção.
 
-O principal objetivo é eliminar duplicação de código, padronizar a segurança entre os serviços e facilitar a manutenção da arquitetura.
+## Responsabilidades atuais
 
----
+- auto-configuração do Spring Security;
+- política stateless e filtro `Bearer`;
+- geração e validação de JWT com JJWT;
+- resposta `401 Unauthorized` para autenticação inválida;
+- liberação de `/auth/**`, `/v3/api-docs/**` e `/swagger-ui/**`;
+- leitura de `bank.security.secret` e `bank.security.expiration`.
 
-# 📚 Índice
+Qualquer outra rota é protegida por padrão.
 
-- Sobre
-- Arquitetura
-- Tecnologias
-- Funcionalidades
-- Estrutura do Projeto
-- Como Utilizar
-- Configuração
-- Fluxo de Autenticação
-- Exemplo de Requisição
-- Compatibilidade
-- Roadmap
-- Autor
+## Uso no monorepo
 
----
+Instale a biblioteca no Maven local:
 
-# 📖 Sobre
-
-Em arquiteturas baseadas em microsserviços, normalmente diversos serviços precisam implementar exatamente a mesma configuração de segurança.
-
-Sem uma biblioteca compartilhada, seria necessário copiar:
-
-- SecurityFilterChain
-- JWT Filter
-- PasswordEncoder
-- AuthenticationManager
-- UserDetailsService
-- Exception Handler
-- Configurações do Spring Security
-
-para cada microsserviço.
-
-Esta biblioteca centraliza toda essa responsabilidade em um único projeto.
-
-Assim, qualquer alteração de segurança é realizada apenas nesta biblioteca.
-
----
-
-# 🏗 Arquitetura
-
+```bash
+./mvnw -f bank-security/pom.xml install
 ```
 
-                +----------------+
-                | Auth Service   |
-                +--------+-------+
-|
-JWT
-|
-v
-+----------------------+
-|   Bank Security Lib  |
-|----------------------|
-| JWT Filter           |
-| Security Config      |
-| Password Encoder     |
-| UserDetailsService   |
-| Authentication       |
-+----------+-----------+
-|
-|
-+----------+----------+
-|                     |
-v                     v
-
-Customer Service      Account Service
-
-|
-v
-
-Transaction Service
-
-```
-
-Todos os microsserviços compartilham exatamente a mesma implementação de segurança.
-
----
-
-# 🚀 Tecnologias
-
-- Java 21
-- Spring Boot
-- Spring Security
-- JWT
-- Maven
-
----
-
-# ✅ Funcionalidades
-
-- Auto Configuration
-- SecurityFilterChain
-- JWT Authentication
-- Stateless Session
-- PasswordEncoder
-- AuthenticationManager
-- UserDetailsService
-- Authorization Filter
-- Endpoints públicos
-- Configuração reutilizável
-- Integração transparente
-
----
-
-# 📂 Estrutura
-
-```
-
-src
-└── main
-├── java
-│
-└── com.emmanuel.banksecurity
-│
-├── config
-├── filter
-├── jwt
-├── service
-├── exception
-├── util
-│
-└── resources
-└── META-INF
-└── spring
-└── org.springframework.boot.autoconfigure.AutoConfiguration.imports
-
-```
-
----
-
-# 📦 Instalação
-
-Adicionar a dependência Maven.
+Dependência usada pelos consumidores:
 
 ```xml
 <dependency>
     <groupId>com.emmanuel</groupId>
     <artifactId>bank-security</artifactId>
-    <version>1.0.0</version>
+    <version>0.0.1-SNAPSHOT</version>
 </dependency>
 ```
 
-Após adicionar a dependência, toda configuração será registrada automaticamente.
-
-Não é necessário criar:
-
-- SecurityConfig
-- PasswordEncoder
-- JWT Filter
-- AuthenticationManager
-
-em cada microsserviço.
-
----
-
-# ⚙ Configuração
-
-Exemplo de configuração.
+Configuração:
 
 ```yaml
-security:
-  jwt:
-    secret: your-secret-key
-    expiration: 86400000
+bank:
+  security:
+    secret: ${BANK_SECURITY_SECRET}
+    expiration: ${BANK_SECURITY_EXPIRATION:86400000}
 ```
 
----
+Use uma chave com pelo menos 32 bytes e nunca versione segredos reais.
 
-# 🔐 Fluxo de Autenticação
+## Limitações e roadmap
 
-```
+- rotas públicas ainda são fixas;
+- não há autorização granular, refresh token, revogação ou rotação de chave;
+- distribuição e versionamento ainda são locais;
+- a suíte de testes é inicial.
 
-Cliente
-
-|
-| Authorization: Bearer Token
-|
-v
-
-JWT Filter
-
-|
-v
-
-Validação do Token
-
-|
-v
-
-Spring Security
-
-|
-v
-
-Controller
-
-|
-v
-
-Service
-
-```
-
-Caso o token seja inválido:
-
-```
-
-401 Unauthorized
-
-```
-
----
-
-# 🌐 Endpoints Públicos
-
-Por padrão:
-
-```
-/auth/**
-```
-
-Todos os demais endpoints exigem autenticação.
-
----
-
-# 📨 Exemplo
-
-### Login
-
-```
-POST /auth/login
-```
-
-Resposta:
-
-```json
-{
-  "accessToken": "eyJhbGciOiJIUzM4NCJ9...",
-  "tokenType": "Bearer"
-}
-```
-
----
-
-### Requisição autenticada
-
-```
-GET /customers
-```
-
-Header:
-
-```
-Authorization: Bearer eyJhbGc...
-```
-
----
-
-# 🔄 Fluxo de Utilização
-
-```
-
-Cliente
-
-↓
-
-Auth Service
-
-↓
-
-JWT
-
-↓
-
-Customer Service
-
-↓
-
-Account Service
-
-↓
-
-Transaction Service
-
-```
-
-Todos utilizam exatamente a mesma biblioteca de segurança.
-
----
-
-# 📈 Benefícios
-
-- Centralização da segurança
-- Reutilização de código
-- Padronização entre microsserviços
-- Facilidade de manutenção
-- Menor acoplamento
-- Configuração automática
-- Evolução simplificada
-- Maior produtividade
-
----
-
-# 💻 Compatibilidade
-
-| Tecnologia | Versão |
-|------------|---------|
-| Java | 21 |
-| Spring Boot | 4.x |
-| Spring Security | 6.x |
-| Maven | 3.9+ |
-
----
-
-# 🛣 Roadmap
-
-### ✅ Implementado
-
-- SecurityFilterChain
-- PasswordEncoder
-- JWT Filter
-- AuthenticationManager
-- AutoConfiguration
-
-### 🚧 Próximos passos
-
-- Refresh Token
-- Roles
-- Permissions
-- Method Security
-- OAuth2
-- OpenID Connect
-- Multi Tenant
-- Auditoria
-- Blacklist de Tokens
-- Token Rotation
-
----
-
-# 📄 Licença
-
-Projeto desenvolvido para fins de estudo e evolução em arquitetura de microsserviços.
-
----
-
-# 👨‍💻 Autor
-
-**Emmanuel Gomes**
-
-Backend Java Developer
-
-Projeto desenvolvido utilizando Java, Spring Boot, Spring Security e arquitetura baseada em microsserviços.
+Próximas evoluções: configuração de rotas por serviço, testes do JWT/filtro, autorização por papéis e estratégia de rotação e publicação.

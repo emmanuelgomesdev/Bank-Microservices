@@ -1,184 +1,53 @@
 # Account Service
 
-Backend desenvolvido em **Java 21** utilizando **Spring Boot 3**, com foco em boas práticas, arquitetura limpa e microsserviços.
+Microsserviço responsável por criar e gerenciar contas e seus saldos no Bank Microservices.
 
-Este projeto faz parte da solução **Banking Microservices**, desenvolvida para simular uma arquitetura bancária moderna semelhante às utilizadas por instituições financeiras. O objetivo é evoluir gradualmente o projeto até uma arquitetura distribuída, incluindo comunicação entre microsserviços, mensageria, observabilidade e deploy em nuvem.
+> [!NOTE]
+> Este módulo está em evolução. As operações locais de conta estão implementadas, mas ainda não há validação remota do cliente nem integração real com o `transaction-service`.
 
----
+## Funcionalidades atuais
 
-## 🏦 Banking Microservices
+- criação de conta com agência padrão e número gerado por sequência;
+- consulta por ID e listagem paginada;
+- bloqueio, desbloqueio e encerramento;
+- consulta e atualização direta de saldo;
+- regras de domínio, tratamento de erros, PostgreSQL, Flyway, JWT e Swagger.
 
-Atualmente a solução é composta pelos seguintes microsserviços:
+## Endpoints
 
-- ✅ customer-service
-- ✅ account-service
-- ✅ transaction-service
+| Método | Rota | Descrição |
+| --- | --- | --- |
+| `POST` | `/accounts` | Cria uma conta |
+| `GET` | `/accounts/{id}` | Consulta por ID |
+| `GET` | `/accounts` | Lista com paginação |
+| `PATCH` | `/accounts/{id}/block` | Bloqueia a conta |
+| `PATCH` | `/accounts/{id}/unblock` | Reativa a conta |
+| `PATCH` | `/accounts/{id}/close` | Encerra a conta |
+| `GET` | `/accounts/{id}/balance` | Consulta o saldo |
+| `PATCH` | `/accounts/{id}/balance` | Atualiza o saldo diretamente |
 
-Próximas evoluções:
+## Execução
 
-- Comunicação entre microsserviços
-- Kafka
-- Redis
-- AWS
-- CI/CD
-- Observabilidade
+Na raiz: `docker compose up --build`.
 
----
+API: `http://localhost:8081/accounts`
 
-## 🚀 Tecnologias
+Swagger: `http://localhost:8081/swagger-ui/index.html`
 
-- Java 21
-- Spring Boot 3
-- Spring Data JPA
-- PostgreSQL
-- Flyway
-- Docker
-- Docker Compose
-- Maven
-- JUnit 5
-- Mockito
-- Swagger / OpenAPI
+Execução isolada: PostgreSQL em `localhost:5434`, `bank-security` instalado localmente e `./mvnw spring-boot:run`.
 
----
+## Configuração
 
-## 📁 Arquitetura
+| Variável | Padrão local |
+| --- | --- |
+| `SPRING_DATASOURCE_URL` | `jdbc:postgresql://localhost:5434/accountdb` |
+| `SPRING_DATASOURCE_USERNAME` | `postgres` |
+| `SPRING_DATASOURCE_PASSWORD` | `postgres` |
+| `BANK_SECURITY_SECRET` | sem padrão |
+| `BANK_SECURITY_EXPIRATION` | `86400000` |
 
-O projeto segue organização por feature.
+## Testes e roadmap
 
-```
-account
-│
-├── application
-├── controller
-├── domain
-├── dto
-├── mapper
-├── repository
-├── service
-└── validation
-```
+Execute `./mvnw test`. A suíte ainda é inicial.
 
-Documentações técnicas encontram-se na pasta **docs/**.
-
----
-
-## ✨ Funcionalidades
-
-- Cadastro de contas
-- Consulta por ID
-- Listagem paginada
-- Ativação de conta
-- Bloqueio de conta
-- Encerramento de conta
-- Consulta de saldo
-- Atualização de saldo
-- Tratamento global de exceções
-- Documentação OpenAPI
-
----
-
-## ▶️ Executando o projeto
-
-### 1. Clonar o repositório
-
-```bash
-git clone <url-do-repositorio>
-```
-
-### 2. Subir o banco de dados
-
-```bash
-docker compose up
-```
-
-### 3. Executar a aplicação
-
-Execute a classe:
-
-```
-AccountServiceApplication
-```
-
-ou execute pelo IntelliJ IDEA.
-
----
-
-## 📚 Documentação da API
-
-Após iniciar a aplicação:
-
-```
-http://localhost:8080/swagger-ui/index.html
-```
-
----
-
-## 🗄️ Banco de Dados
-
-As alterações do banco são versionadas utilizando **Flyway**.
-
-Todas as migrations encontram-se em:
-
-```
-src/main/resources/db/migration
-```
-
----
-
-## 🧪 Testes
-
-Linux/macOS
-
-```bash
-./mvnw test
-```
-
-Windows
-
-```powershell
-mvnw.cmd test
-```
-
----
-
-## 🐳 Docker
-
-Subir ambiente
-
-```bash
-docker compose up
-```
-
-Parar ambiente
-
-```bash
-docker compose down
-```
-
----
-
-## 📌 Roadmap
-
-- [x] CRUD de contas
-- [x] Ativação de conta
-- [x] Bloqueio de conta
-- [x] Encerramento de conta
-- [x] Consulta de saldo
-- [x] Atualização de saldo
-- [x] Docker
-- [x] Docker Compose
-- [x] Flyway
-- [ ] Comunicação entre Microsserviços
-- [ ] Kafka
-- [ ] Redis
-- [ ] AWS
-- [ ] GitHub Actions
-- [ ] CI/CD
-- [ ] Observabilidade
-- [ ] Testes de Integração
-
----
-
-## 👨‍💻 Autor
-
-**Emmanuel Gomes**
+Próximas evoluções: validar clientes remotamente, restringir atualização de saldo ao fluxo transacional, integrar transações e ampliar testes, observabilidade e CI/CD.
