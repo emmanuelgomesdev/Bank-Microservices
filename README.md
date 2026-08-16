@@ -1,9 +1,9 @@
 # Bank Microservices
 
-Projeto de estudo em **Java 21 e Spring Boot** que simula uma plataforma bancária formada por APIs independentes, bancos PostgreSQL separados e uma biblioteca compartilhada de segurança JWT.
+Projeto autoral em **Java 21 e Spring Boot** que simula uma plataforma bancária formada por APIs independentes, bancos PostgreSQL separados e uma biblioteca compartilhada de segurança JWT.
 
 > [!IMPORTANT]
-> **Projeto em evolução.** Este repositório é um laboratório de arquitetura e não representa um sistema bancário finalizado ou pronto para produção. Algumas integrações entre serviços ainda não existem e o `transaction-service` utiliza dados simulados para conta, status e saldo.
+> **Projeto em evolução.** A solução está sendo construída de forma incremental e ainda não representa um sistema bancário finalizado ou pronto para produção. Algumas integrações entre serviços não foram implementadas e o `transaction-service` utiliza dados simulados para conta, status e saldo.
 
 ## Visão geral
 
@@ -88,4 +88,4 @@ Os endpoints `/auth/**` e a documentação Swagger são públicos. Os demais end
 
 ## Autor
 
-Desenvolvido por **Emmanuel Gomes** como projeto prático de aprendizado contínuo em backend Java e arquitetura de microsserviços.
+Desenvolvido por **Emmanuel Gomes** como projeto autoral de backend Java e arquitetura de microsserviços.
