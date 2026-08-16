@@ -3,7 +3,7 @@
 Biblioteca interna que reúne a configuração JWT compartilhada pelos serviços Spring Boot.
 
 > [!NOTE]
-> Biblioteca em evolução, criada para estudo e reutilização neste monorepo. Ainda não é publicada em um repositório Maven nem representa uma solução completa de segurança para produção.
+> Biblioteca em evolução, criada para centralizar e reutilizar a configuração de segurança neste monorepo. Ainda não é publicada em um repositório Maven nem representa uma solução completa de segurança para produção.
 
 ## Responsabilidades atuais
 
