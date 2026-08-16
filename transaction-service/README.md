@@ -46,4 +46,4 @@ Execução isolada: PostgreSQL em `localhost:5436` e `./mvnw spring-boot:run`.
 
 Execute `./mvnw test`. Atualmente existe apenas o teste de contexto.
 
-Próximas evoluções: remover os mocks, integrar contas, garantir idempotência e consistência, avaliar Kafka, adicionar segurança compartilhada e ampliar testes, observabilidade e CI/CD.
+Próximas evoluções: remover os mocks, integrar contas, garantir idempotência e consistência, implementar Kafka, adicionar segurança compartilhada e ampliar testes, observabilidade e CI/CD.
