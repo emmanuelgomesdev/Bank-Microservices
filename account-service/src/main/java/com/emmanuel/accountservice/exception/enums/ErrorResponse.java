@@ -8,8 +8,11 @@ public enum ErrorResponse {
     ACCOUNT_NUMBER_ALREADY_EXISTS("ACCOUNT-003", "Account number already exists", HttpStatus.BAD_REQUEST),
     ACCOUNT_VALIDATION_ERROR("ACCOUNT-004", "Account validation error", HttpStatus.BAD_REQUEST),
     ACCOUNT_ALREADY_CLOSED("ACCOUNT-005", "Account already closed", HttpStatus.CONFLICT),
+    ACCOUNT_NOT_ACTIVE("ACCOUNT-006", "Account not active", HttpStatus.BAD_REQUEST),
     TRANSACTION_INSUFFICIENT_BALANCE("ACCOUNT-006", "Insufficient balance", HttpStatus.BAD_REQUEST),
-    ACCOUNT_INVALID_BALANCE("ACCOUNT-007", "ACCOUNT_INVALID_BALANCE", HttpStatus.BAD_REQUEST);
+    ACCOUNT_INVALID_BALANCE("ACCOUNT-007", "Invalid balance", HttpStatus.BAD_REQUEST),
+    ACCOUNT_INVALID_AMOUNT( "ACCOUNT-008", "Insufficient amount", HttpStatus.BAD_REQUEST),
+    ACCOUNT_INVALID_TYPE("ACCOUNT-009", "Invalid movement type", HttpStatus.BAD_REQUEST),;
 
     private final String code;
     private final String message;

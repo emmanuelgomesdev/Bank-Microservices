@@ -96,6 +96,7 @@ services:
       SPRING_DATASOURCE_PASSWORD: postgres
       BANK_SECURITY_SECRET: minha-chave-jwt-super-segura-com-mais-de-32-caracteres
       BANK_SECURITY_EXPIRATION: 86400000
+      ACCOUNT_SERVICE_URL: http://account-service:8081
     depends_on:
       postgres-account:
         condition: service_healthy
@@ -112,9 +113,12 @@ services:
       SPRING_DATASOURCE_PASSWORD: postgres
       BANK_SECURITY_SECRET: minha-chave-jwt-super-segura-com-mais-de-32-caracteres
       BANK_SECURITY_EXPIRATION: 86400000
+      ACCOUNT_SERVICE_URL: http://account-service:8081
     depends_on:
       postgres-transaction:
         condition: service_healthy
+      account-service:
+        condition: service_started
 
   auth-service:
     build:

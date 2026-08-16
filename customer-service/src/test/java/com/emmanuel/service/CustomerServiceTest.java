@@ -93,7 +93,7 @@ public class CustomerServiceTest {
     }
 
     @Test
-    void shouldFindcustomerById() {
+    void shouldFindCustomerById() {
 
         UUID id = UUID.randomUUID();
         LocalDateTime now = LocalDateTime.now();
@@ -113,20 +113,14 @@ public class CustomerServiceTest {
                 customer.getEmail(),
                 customer.getBirthDate(),
                 CustomerStatus.ACTIVE,
-                customer.getPhone(),
-                now,
-                now
-        );
+                customer.getPhone(), now, now);
 
         when(validator.findByIdOrThrow(id)).thenReturn(customer);
         when(applicationMapper.toResult(customer)).thenReturn(result);
-
         CustomerResult response = service.findById(id);
-
         assertThat(response.fullName()).isEqualTo(customer.getFullName());
         assertThat(response.document()).isEqualTo(customer.getDocument());
         assertThat(response.email()).isEqualTo(customer.getEmail());
-
         verify(validator).findByIdOrThrow(id);
         verify(applicationMapper).toResult(customer);
     }
@@ -253,25 +247,4 @@ public class CustomerServiceTest {
         verify(applicationMapper).toResult(customer);
     }
 
-    @Test
-    void shouldDeletecustomer() {
-
-        UUID id = UUID.randomUUID();
-
-        Customer customer = Customer.create(
-                "Maria Isabel",
-                "11.555.444-99",
-                "isabel@email.com",
-                LocalDate.parse("1998-06-18"),
-                "(44)55996633"
-
-        );
-
-        when(validator.findByIdOrThrow(id)).thenReturn(customer);
-
-        service.delete(id);
-
-        verify(validator).findByIdOrThrow(id);
-        verify(repository).delete(customer);
-    }
 }

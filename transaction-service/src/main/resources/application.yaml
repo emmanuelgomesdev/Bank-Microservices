@@ -22,3 +22,6 @@ bank:
   security:
     secret: ${BANK_SECURITY_SECRET}
     expiration: ${BANK_SECURITY_EXPIRATION:86400000}
+
+account-service:
+  url: ${ACCOUNT_SERVICE_URL:http://localhost:8081}

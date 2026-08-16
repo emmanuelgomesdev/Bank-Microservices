@@ -1,10 +1,10 @@
 package com.emmanuel.accountservice.account.controller;
 
-import com.emmanuel.accountservice.account.domain.Account;
-import com.emmanuel.accountservice.account.dto.AccountBalanceResponse;
-import com.emmanuel.accountservice.account.dto.AccountRequest;
-import com.emmanuel.accountservice.account.dto.AccountResponse;
-import com.emmanuel.accountservice.account.dto.UpdateBalanceRequest;
+import com.emmanuel.accountservice.account.dto.in.AccountMovementRequest;
+import com.emmanuel.accountservice.account.dto.in.AccountRequest;
+import com.emmanuel.accountservice.account.dto.out.AccountBalanceResponse;
+import com.emmanuel.accountservice.account.dto.out.AccountMovementResponse;
+import com.emmanuel.accountservice.account.dto.out.AccountResponse;
 import com.emmanuel.accountservice.account.mapper.AccountRestMapper;
 import com.emmanuel.accountservice.account.service.AccountService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -21,7 +21,6 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.math.BigDecimal;
 import java.util.UUID;
 
 @Tag(name = "accounts", description = "Endpoints for account management")
@@ -145,17 +144,23 @@ public class AccountController {
 
     }
 
-    @PatchMapping("/{id}/balance")
-    @Operation(summary = "Update balance", description = "Updates the current balance")
+    @PostMapping(value = "/{id}/movement")
+    @Operation(
+            summary = "Apply account movement",
+            description = "Applies a credit or debit movement to the account and updates its balance."
+    )
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Balance successfully updated"),
-            @ApiResponse(responseCode = "404", description = "Account not found")
+            @ApiResponse(responseCode = "200", description = "Movement applied successfully"),
+            @ApiResponse(responseCode = "400", description = "Invalid movement request"),
+            @ApiResponse(responseCode = "404", description = "Account not found"),
+            @ApiResponse(responseCode = "409", description = "Account is not active or has insufficient balance")
     })
-    public ResponseEntity<AccountBalanceResponse> updateBalance(
-            @PathVariable UUID id, @RequestBody @Valid UpdateBalanceRequest request) {
+    public ResponseEntity<AccountMovementResponse>  movement(
+            @PathVariable UUID id, @RequestBody @Valid AccountMovementRequest request){
+        var command = accountRestMapper.toCommand(request);
+        var result  = accountService.applyMovement(id, command);
+        var response = accountRestMapper.toResponse(result);
 
-        var result  = accountService.updateBalance(id, request.newBalance());
-        var response = accountRestMapper.toBalanceResponse(result);
         return ResponseEntity.ok(response);
     }
 

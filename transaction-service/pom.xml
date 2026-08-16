@@ -26,6 +26,9 @@
 		<java.version>21</java.version>
 		<mapstruct.version>1.6.3</mapstruct.version>
 		<springdoc.version>2.8.17</springdoc.version>
+
+		<!-- Versões do ecossistema Spring Cloud -->
+		<spring-cloud.version>2025.0.3</spring-cloud.version>
 	</properties>
 
 	<dependencies>
@@ -52,6 +55,12 @@
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-actuator</artifactId>
+		</dependency>
+
+		<!-- OpenFeign: integração HTTP declarativa entre microsserviços -->
+		<dependency>
+			<groupId>org.springframework.cloud</groupId>
+			<artifactId>spring-cloud-starter-openfeign</artifactId>
 		</dependency>
 
 		<!-- Swagger e OpenAPI -->
@@ -102,6 +111,26 @@
 		</dependency>
 
 	</dependencies>
+
+	<!--
+        BOM do Spring Cloud.
+
+        Ele controla as versões internas das dependências do Spring Cloud.
+        Por isso o starter do OpenFeign não precisa de versão própria.
+    -->
+	<dependencyManagement>
+		<dependencies>
+
+			<dependency>
+				<groupId>org.springframework.cloud</groupId>
+				<artifactId>spring-cloud-dependencies</artifactId>
+				<version>${spring-cloud.version}</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
+
+		</dependencies>
+	</dependencyManagement>
 
 	<build>
 		<plugins>

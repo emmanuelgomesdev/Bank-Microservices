@@ -27,9 +27,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
-@AutoConfigureMockMvc
-public class CustomerIntegrationTest {
-
+@AutoConfigureMockMvc(addFilters = false)
+class CustomerIntegrationTest {
     @Autowired
     private MockMvc mockMvc;
 
@@ -206,9 +205,7 @@ public class CustomerIntegrationTest {
     }
 
     @Test
-    void shouldDeletecustomer() throws Exception {
-
-        //Arrange
+    void shouldDeactivateCustomer() throws Exception {
         Customer customer = Customer.create(
                 "José Gomes",
                 "11.777.999-33",
@@ -219,12 +216,20 @@ public class CustomerIntegrationTest {
 
         Customer saved = repository.save(customer);
 
-        //Act/Assert HTTP
-        mockMvc.perform(delete("/customers/{id}", saved.getId()))
-                .andExpect(status().isNoContent());
+        mockMvc.perform(
+                        patch("/customers/{id}/deactivate", saved.getId())
+                )
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id")
+                        .value(saved.getId().toString()))
+                .andExpect(jsonPath("$.status")
+                        .value(CustomerStatus.INACTIVE.name()));
 
-        //Assert database
-        assertThat(repository.findById(saved.getId())).isEmpty();
+        Customer deactivated = repository
+                .findById(saved.getId())
+                .orElseThrow();
 
+        assertThat(deactivated.getStatus())
+                .isEqualTo(CustomerStatus.INACTIVE);
     }
 }
