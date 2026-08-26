@@ -49,14 +49,13 @@ public class Transaction {
 
     public static Transaction create(
             UUID accountId,
-            BigDecimal amount,
             BigDecimal balance,
             String description,
             TransactionType type
     ){
         Transaction transaction = new Transaction();
         transaction.accountId = accountId;
-        transaction.amount = amount;
+        transaction.amount = BigDecimal.ZERO;
         transaction.balance = balance;
         transaction.description = description;
         transaction.status = TransactionStatus.PENDING;
