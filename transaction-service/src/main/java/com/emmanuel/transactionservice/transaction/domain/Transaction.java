@@ -34,7 +34,7 @@ public class Transaction {
     @Column(name = "balance", precision = 19, scale = 2, nullable = false)
     private BigDecimal balance;
 
-    @Column(name = "description", nullable = false)
+    @Column(name = "description", nullable = false, length = 100)
     private String description;
 
     @Column(name = "status", nullable = false)

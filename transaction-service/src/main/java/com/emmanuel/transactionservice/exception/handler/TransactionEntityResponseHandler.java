@@ -6,6 +6,8 @@ import com.emmanuel.transactionservice.exception.dto.FieldErrorResponse;
 import com.emmanuel.transactionservice.exception.enums.ErrorResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import org.jspecify.annotations.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
@@ -21,6 +23,8 @@ import java.util.List;
 
 @RestControllerAdvice
 public class TransactionEntityResponseHandler extends ResponseEntityExceptionHandler {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(TransactionEntityResponseHandler.class);
 
 
     @ExceptionHandler(BusinessException.class)
@@ -82,4 +86,32 @@ public class TransactionEntityResponseHandler extends ResponseEntityExceptionHan
 
 
     }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ExceptionResponse> handleUnexpectedException(
+            Exception exception,
+            HttpServletRequest request
+    ) {
+        LOGGER.error(
+                "Unexpected error while processing request {}",
+                request.getRequestURI(),
+                exception
+        );
+
+        var error = ErrorResponse.TRANSACTION_INTERNAL_ERROR;
+
+        var response = new ExceptionResponse(
+                LocalDateTime.now(),
+                error.getHttpStatus().value(),
+                error.getErrorCode(),
+                error.getErrorMessage(),
+                request.getRequestURI(),
+                List.of()
+        );
+
+        return ResponseEntity
+                .status(error.getHttpStatus())
+                .body(response);
+    }
 }
+
