@@ -1,0 +1,2 @@
+ALTER TABLE transactions
+    ALTER COLUMN balance DROP NOT NULL

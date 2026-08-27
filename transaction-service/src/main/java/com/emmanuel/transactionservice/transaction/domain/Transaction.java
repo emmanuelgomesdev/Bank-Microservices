@@ -1,5 +1,7 @@
 package com.emmanuel.transactionservice.transaction.domain;
 
+import com.emmanuel.transactionservice.exception.BusinessException;
+import com.emmanuel.transactionservice.exception.enums.ErrorResponse;
 import com.emmanuel.transactionservice.transaction.domain.enums.TransactionStatus;
 import com.emmanuel.transactionservice.transaction.domain.enums.TransactionType;
 import jakarta.persistence.*;
@@ -49,15 +51,38 @@ public class Transaction {
 
     public static Transaction create(
             UUID accountId,
-            BigDecimal balance,
+            BigDecimal amount,
             String description,
             TransactionType type
     ){
+        if (accountId == null) {
+            throw new BusinessException(
+                    ErrorResponse.TRANSACTION_ACCOUNT_REQUIRED
+            );
+        }
+
+        if (amount == null || amount.compareTo(BigDecimal.ZERO) <= 0) {
+            throw new BusinessException(
+                    ErrorResponse.TRANSACTION_INVALID_AMOUNT
+            );
+        }
+
+        if (description == null || description.isBlank()) {
+            throw new BusinessException(
+                    ErrorResponse.TRANSACTION_DESCRIPTION_REQUIRED
+            );
+        }
+
+        if (type == null) {
+            throw new BusinessException(
+                    ErrorResponse.TRANSACTION_INVALID_TYPE
+            );
+        }
+
         Transaction transaction = new Transaction();
         transaction.accountId = accountId;
-        transaction.amount = BigDecimal.ZERO;
-        transaction.balance = balance;
-        transaction.description = description;
+        transaction.amount = amount;
+        transaction.description = description.trim();
         transaction.status = TransactionStatus.PENDING;
         transaction.type = type;
 

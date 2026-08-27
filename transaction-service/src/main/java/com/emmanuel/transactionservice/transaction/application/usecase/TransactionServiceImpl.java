@@ -35,7 +35,10 @@ public class TransactionServiceImpl implements CreateTransactionUseCase {
     @Transactional
     @Override
     public TransactionResult execute(TransactionCommand command) {
-        LOGGER.info("Executa uma transação para conta {}", command.accountId());
+        LOGGER.info(
+                "Recebida solicitação de transação para a conta {}",
+                command.accountId()
+        );
 
         Transaction transaction = Transaction.create(
                 command.accountId(),
@@ -44,9 +47,15 @@ public class TransactionServiceImpl implements CreateTransactionUseCase {
                 command.type()
         );
 
-        var transactionSaved = transactionRepository.save(transaction);
-        LOGGER.info("Transação na conta {}, executada com sucesso", command.accountId());
-        return mapper.toResult(transactionSaved);
+        var savedTransaction = transactionRepository.save(transaction);
+
+        LOGGER.info(
+                "Transação {} registrada para a conta {} com status {}",
+                savedTransaction.getId(),
+                savedTransaction.getAccountId(),
+                savedTransaction.getStatus()
+        );
+        return mapper.toResult(savedTransaction);
 
     }
 

@@ -38,7 +38,7 @@ public class TransactionController {
             description = "Creates a new transaction"
     )
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "201", description = "Transaction created successfully"),
+            @ApiResponse(responseCode = "202", description = "Transaction created successfully"),
             @ApiResponse(responseCode = "400", description = "Validation error"),
             @ApiResponse(responseCode = "409", description = "Transaction cannot be processed")
     })
@@ -49,7 +49,7 @@ public class TransactionController {
         var result = useCase.execute(command);
         var response = mapper.toResult(result);
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+        return ResponseEntity.status(HttpStatus.ACCEPTED).body(response);
 
     }
 

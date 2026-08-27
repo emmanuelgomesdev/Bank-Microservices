@@ -9,12 +9,12 @@ import java.util.UUID;
 
 public record TransactionResponse(
         UUID id,
-        UUID contaId,
+        UUID accountId,
         BigDecimal amount,
         String description,
         BigDecimal balance,
         TransactionStatus status,
         TransactionType type,
-        LocalDateTime created_at
+        LocalDateTime createdAt
 ) {
 }
