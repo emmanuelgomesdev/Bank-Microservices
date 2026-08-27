@@ -3,7 +3,7 @@ package com.emmanuel.transactionservice.transaction.controller;
 import com.emmanuel.transactionservice.transaction.dto.TransactionRequest;
 import com.emmanuel.transactionservice.transaction.dto.TransactionResponse;
 import com.emmanuel.transactionservice.transaction.mapper.TransactionRestMapper;
-import com.emmanuel.transactionservice.transaction.service.TransactionService;
+import com.emmanuel.transactionservice.transaction.application.port.input.CreateTransactionUseCase;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -19,16 +19,17 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
+
 @Tag(name = "transactions", description = "Endpoints for transaction management")
 @RestController
 @RequestMapping("/transactions")
 public class TransactionController {
 
-    private final TransactionService transactionService;
+    private final CreateTransactionUseCase useCase;
     private final TransactionRestMapper mapper;
 
-    public TransactionController(TransactionService transactionService, TransactionRestMapper mapper) {
-        this.transactionService = transactionService;
+    public TransactionController(CreateTransactionUseCase useCase, TransactionRestMapper mapper) {
+        this.useCase = useCase;
         this.mapper = mapper;
     }
 
@@ -37,7 +38,7 @@ public class TransactionController {
             description = "Creates a new transaction"
     )
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "201", description = "Transaction created successfully"),
+            @ApiResponse(responseCode = "202", description = "Transaction created successfully"),
             @ApiResponse(responseCode = "400", description = "Validation error"),
             @ApiResponse(responseCode = "409", description = "Transaction cannot be processed")
     })
@@ -45,10 +46,10 @@ public class TransactionController {
             @RequestBody @Valid TransactionRequest request) {
 
         var command = mapper.toCommand(request);
-        var result = transactionService.create(command);
+        var result = useCase.execute(command);
         var response = mapper.toResult(result);
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+        return ResponseEntity.status(HttpStatus.ACCEPTED).body(response);
 
     }
 
@@ -62,10 +63,11 @@ public class TransactionController {
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
     public ResponseEntity<TransactionResponse> findById(@PathVariable UUID id) {
-        var result = transactionService.findById(id);
+        var result = useCase.findById(id);
         var response = mapper.toResult(result);
         return ResponseEntity.ok(response);
     }
+
 
     @GetMapping
     @Operation(summary = "Find all transactions",
@@ -82,8 +84,10 @@ public class TransactionController {
                      direction = Sort.Direction.DESC
              ) Pageable pageable) {
 
-        var result = transactionService.findAll(pageable);
+        var result = useCase.findAll(pageable);
         return result.map(mapper::toResult);
 
     }
+
+
 }

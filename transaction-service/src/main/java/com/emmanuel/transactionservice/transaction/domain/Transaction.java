@@ -1,5 +1,7 @@
 package com.emmanuel.transactionservice.transaction.domain;
 
+import com.emmanuel.transactionservice.exception.BusinessException;
+import com.emmanuel.transactionservice.exception.enums.ErrorResponse;
 import com.emmanuel.transactionservice.transaction.domain.enums.TransactionStatus;
 import com.emmanuel.transactionservice.transaction.domain.enums.TransactionType;
 import jakarta.persistence.*;
@@ -32,7 +34,7 @@ public class Transaction {
     @Column(name = "balance", precision = 19, scale = 2, nullable = false)
     private BigDecimal balance;
 
-    @Column(name = "description", nullable = false)
+    @Column(name = "description", nullable = false, length = 100)
     private String description;
 
     @Column(name = "status", nullable = false)
@@ -50,15 +52,37 @@ public class Transaction {
     public static Transaction create(
             UUID accountId,
             BigDecimal amount,
-            BigDecimal balance,
             String description,
             TransactionType type
     ){
+        if (accountId == null) {
+            throw new BusinessException(
+                    ErrorResponse.TRANSACTION_ACCOUNT_REQUIRED
+            );
+        }
+
+        if (amount == null || amount.compareTo(BigDecimal.ZERO) <= 0) {
+            throw new BusinessException(
+                    ErrorResponse.TRANSACTION_INVALID_AMOUNT
+            );
+        }
+
+        if (description == null || description.isBlank()) {
+            throw new BusinessException(
+                    ErrorResponse.TRANSACTION_DESCRIPTION_REQUIRED
+            );
+        }
+
+        if (type == null) {
+            throw new BusinessException(
+                    ErrorResponse.TRANSACTION_INVALID_TYPE
+            );
+        }
+
         Transaction transaction = new Transaction();
         transaction.accountId = accountId;
         transaction.amount = amount;
-        transaction.balance = balance;
-        transaction.description = description;
+        transaction.description = description.trim();
         transaction.status = TransactionStatus.PENDING;
         transaction.type = type;
 
