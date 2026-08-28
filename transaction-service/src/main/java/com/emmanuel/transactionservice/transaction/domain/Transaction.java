@@ -31,11 +31,14 @@ public class Transaction {
     @Column(name = "amount", precision = 19, scale = 2, nullable = false)
     private BigDecimal amount;
 
-    @Column(name = "balance", precision = 19, scale = 2, nullable = false)
+    @Column(name = "balance", precision = 19, scale = 2)
     private BigDecimal balance;
 
     @Column(name = "description", nullable = false, length = 100)
     private String description;
+
+    @Column(name = "failure_reason", length = 255)
+    private String failureReason;
 
     @Column(name = "status", nullable = false)
     @Enumerated(EnumType.STRING)
@@ -89,6 +92,38 @@ public class Transaction {
         return transaction;
     }
 
+    private void ensurePending(){
+        if (status != TransactionStatus.PENDING){
+            throw new BusinessException(ErrorResponse.TRANSACTION_ALREADY_PROCESSED);
+        }
+
+    }
+
+    public void complete(BigDecimal currentBalance){
+        ensurePending();
+
+        if (currentBalance == null){
+            throw new BusinessException(ErrorResponse.TRANSACTION_CURRENT_BALANCE_REQUIRED);
+        }
+
+        this.balance = currentBalance;
+        this.status = TransactionStatus.COMPLETED;
+    }
+
+    public void fail(String reason){
+        ensurePending();
+
+        if (reason == null || reason.isBlank()){
+            throw new BusinessException(ErrorResponse.TRANSACTION_INVALID_REASON);
+        }
+
+        this.failureReason = reason.trim();
+        this.status = TransactionStatus.FAILED;
+
+    }
+
+
+
     public UUID getId() {return id;}
 
     public UUID getAccountId() {return accountId;}
@@ -104,5 +139,7 @@ public class Transaction {
     public TransactionType getType() {return type;}
 
     public LocalDateTime getCreatedAt() {return createdAt;}
+
+    public String getFailureReason() {return failureReason;}
 
 }
