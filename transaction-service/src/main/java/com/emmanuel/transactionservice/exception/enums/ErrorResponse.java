@@ -18,7 +18,9 @@ public enum ErrorResponse {
     TRANSACTION_VALIDATION_ERROR("TRANSACTION-012", "Validation error", HttpStatus.BAD_REQUEST),
     TRANSACTION_INTERNAL_ERROR("TRANSACTION-013", "An unexpected internal error occurred", HttpStatus.INTERNAL_SERVER_ERROR),
     TRANSACTION_DESCRIPTION_REQUIRED("TRANSACTION-013", "Transaction description must not be null or blank", HttpStatus.BAD_REQUEST),
-    TRANSACTION_ACCOUNT_REQUIRED("TRANSACTION-014", "Transaction account ID is required", HttpStatus.BAD_REQUEST);
+    TRANSACTION_ACCOUNT_REQUIRED("TRANSACTION-014", "Transaction account ID is required", HttpStatus.BAD_REQUEST),
+    TRANSACTION_INVALID_REASON("TRANSACTION-015", "The provided reason is invalid.", HttpStatus.BAD_REQUEST),
+    TRANSACTION_CURRENT_BALANCE_REQUIRED("TRANSACTION-016", "Current balance is required to complete the transaction", HttpStatus.UNPROCESSABLE_ENTITY);
 
     private final String errorCode;
     private final String errorMessage;
